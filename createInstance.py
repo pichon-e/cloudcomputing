@@ -10,9 +10,12 @@ ip_nico = '163.5.12.103'
 ip_max = '163.5.12.99'
 ip_steve = '163.5.12.199'
 
+def createKP():
+	kp = conn.create_key_pair(kname)
+	kp.save('.')
+
 def createConn():
 	conn = boto.connect_ec2_endpoint(endpoint_url, AK, SK)
-
 
 def createSGroup():
 	security_group = conn.create_security_group(sg_group, sg_group)
