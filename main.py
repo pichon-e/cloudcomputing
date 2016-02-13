@@ -30,6 +30,8 @@ def init_connection():
     create_security_group(conn)
     vms = create_instance(conn)
     create_tag(conn, vms)
+    link_eip_address(conn)
+    deleteInstance(conn, 'linstance')
 
 if __name__ == '__main__':
     parser = OptionParser()

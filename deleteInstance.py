@@ -1,6 +1,5 @@
 # !/usr/bin/env python
 import boto
 
-def deleteInstances(instances):
-	stop_instances(instances, force=true) 
-	terminate_instances(instances)
+def deleteInstances(conn, instance):
+	conn.terminate_instances(instance[id_instance])

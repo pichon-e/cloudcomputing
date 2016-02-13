@@ -21,21 +21,28 @@ def create_security_group(conn):
     security_group.authorize('tcp', 22, 22, ip_max)
     security_group.authorize('tcp', 22, 22, ip_nico)
     security_group.authorize('tcp', 22, 22, ip_steve)
-    security_group.authorize('udp', 6660, 6660, 0.0.0.0)
 
 
-def create_instance(conn):
-    vms = conn.run_instances('ami-d0214875',
+
+def create_instance(conn, nb_rame):
+    if nb_rame == 1:
+        vms = conn.run_instances('ami-d0214875',
                              min_count='1',
                              max_count='1',
                              key_name=options.key_name,
-                             instance_type=options.vm_type)
+                             instance_type='tina.c1r1')
+    else:
+        vms = conn.run_instances('ami-d0214875',
+                             min_count='1',
+                             max_count='1',
+                             key_name=options.key_name,
+                             instance_type='tina.c1r2')
     return vms
 
 
 def create_tag(conn, vms):
     instance = vms.instances[0]
-    conn.create_tags([instance.id], {'Name': options.tag_name})
+    conn.create_tags([instance.id], {'Name': 'db'})
     instance.update()
 
 
@@ -45,4 +52,3 @@ def init_connection(log):
 
 def link_eip_address(conn):
     conn.associate_address(vms.instances[0][instance_id], '171.33.91.119', None)
-
