@@ -2,23 +2,7 @@
 import boto
 import sys
 from requests import get
-from optparse import OptionParser
-import json
-
-endpoint_url = 'https://fcu.eu-west-2.outscale.com'
-AK = '79F67Z13CK5HY192067E'
-SK = 'EG1W3ELHCK3N2S29W3YZCBG0RZ7AJWK53RHW53GH'
-
-request = {
-    'tina.c1r1': {
-        'web': 100,
-        'db': 1500
-    },
-    'tina.c1r2': {
-        'web': 300,
-        'db': 4000
-    }
-}
+from main import log
 
 
 def create_key_pair(conn):
@@ -37,6 +21,7 @@ def create_security_group(conn):
     security_group.authorize('tcp', 22, 22, ip_max)
     security_group.authorize('tcp', 22, 22, ip_nico)
     security_group.authorize('tcp', 22, 22, ip_steve)
+    security_group.authorize('udp', 6660, 6660, 0.0.0.0)
 
 
 def create_instance(conn):
@@ -54,26 +39,10 @@ def create_tag(conn, vms):
     instance.update()
 
 
-def init_connection():
-    conn = boto.connect_ec2_endpoint(endpoint_url, AK, SK)
+def init_connection(log):
+    conn = boto.connect_ec2_endpoint(log.endpoint_url, log.AK, log.SK)
     return conn
 
 
-if __name__ == '__main__':
-    parser = OptionParser()
-    parser.add_option('-k', '--key-pair', dest='key_name',
-                      help='key_pair Name', default=None)
-    parser.add_option('-s', '--security_group', dest='sg_group',
-                      help='security_group name', default=None)
-    parser.add_option('-n', '--tag_name', dest='tag_name',
-                      help='tag name', default=None)
-    parser.add_option('-t', '--vm_type', dest='vm_type',
-                      help='type of vm', default=None)
 
-    (options, args) = parser.parse_args()
 
-    conn = init_connection()
-    create_key_pair(conn)
-    create_security_group(conn)
-    vms = create_instance(conn)
-    create_tag(conn, vms)
