@@ -23,11 +23,14 @@ def create_security_group(conn):
     security_group.authorize('tcp', 22, 22, ip_steve)
     security_group.authorize('udp', 6660, 6660, 0.0.0.0)
 
+    return security_group
 
-def create_instance(conn):
+
+def create_instance(conn, sg):
     vms = conn.run_instances('ami-d0214875',
                              min_count='1',
                              max_count='1',
+                             security_group_ids=[sg.id],
                              key_name=options.key_name,
                              instance_type=options.vm_type)
     return vms
@@ -45,4 +48,3 @@ def init_connection(log):
 
 def link_eip_address(conn):
     conn.associate_address(vms.instances[0][instance_id], '171.33.91.119', None)
-
